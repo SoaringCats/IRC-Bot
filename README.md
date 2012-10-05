@@ -9,3 +9,7 @@ This repository holds the very key to #SoaringCats: the SoaringCats IRC bot.
 
 ##What does this bot not do?
 * Cook
+
+## Requirements
+* Latest version of Gson
+* Latest version of PircBot

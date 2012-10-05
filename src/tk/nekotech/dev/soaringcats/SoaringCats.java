@@ -20,12 +20,14 @@ public class SoaringCats extends PircBot {
     private ArrayList<String> prefixes;
     private SimpleDateFormat sdf;
 
-    public static void main(String[] args) {
-        new SoaringCats();
-    }
-
     public SoaringCats() {
         System.out.println("Starting...");
+        try {
+            new WebListener(this);
+        } catch (IOException exception) {
+            System.err.println("Failed to start WebListener:");
+            exception.printStackTrace(System.err);
+        }
         sdf = new SimpleDateFormat("E, dd yyyy; kk:mm");
         File file = new File("notes");
         if (!file.exists()) {
