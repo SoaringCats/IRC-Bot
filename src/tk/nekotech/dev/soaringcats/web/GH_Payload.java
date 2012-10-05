@@ -1,7 +1,6 @@
 package tk.nekotech.dev.soaringcats.web;
 
 public class GH_Payload {
-    
     public class Author {
         public String email;
         public String name;
@@ -29,5 +28,4 @@ public class GH_Payload {
     public Commit[] commits;
     public String after;
     public String ref;
-    
 }

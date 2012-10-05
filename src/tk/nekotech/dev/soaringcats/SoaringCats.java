@@ -15,20 +15,20 @@ import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
 
 public class SoaringCats extends PircBot {
-    private String version = "0.1";
+    private final String version = "0.1";
     private String ident = "default:default";
     private ArrayList<String> prefixes;
-    private SimpleDateFormat sdf;
+    private final SimpleDateFormat sdf;
 
     public SoaringCats() {
         System.out.println("Starting...");
         try {
             new WebListener(this);
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             System.err.println("Failed to start WebListener:");
             exception.printStackTrace(System.err);
         }
-        sdf = new SimpleDateFormat("E, dd yyyy; kk:mm");
+        this.sdf = new SimpleDateFormat("E, dd yyyy; kk:mm");
         File file = new File("notes");
         if (!file.exists()) {
             file.mkdir();
@@ -40,25 +40,26 @@ public class SoaringCats extends PircBot {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                BufferedWriter out = new BufferedWriter(new FileWriter(file));
+                final BufferedWriter out = new BufferedWriter(new FileWriter(file));
                 out.write("# Enter prefixes seperated by new lines to be welcomed by the bot");
                 out.flush();
                 out.close();
-            } catch (IOException exception) {
+            } catch (final IOException exception) {
                 System.err.println("Failed first write of config!");
                 exception.printStackTrace(System.err);
             }
         } else {
             try {
-                BufferedReader in = new BufferedReader(new FileReader(file));
-                prefixes = new ArrayList<String>();
+                final BufferedReader in = new BufferedReader(new FileReader(file));
+                this.prefixes = new ArrayList<String>();
                 String nextLine;
                 while ((nextLine = in.readLine()) != null) {
-                    if (!nextLine.startsWith("#"))
-                        prefixes.add(nextLine);
+                    if (!nextLine.startsWith("#")) {
+                        this.prefixes.add(nextLine);
+                    }
                 }
                 in.close();
-            } catch (IOException exception) {
+            } catch (final IOException exception) {
                 System.err.println("Failed read of config!");
                 exception.printStackTrace(System.err);
             }
@@ -67,40 +68,40 @@ public class SoaringCats extends PircBot {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                BufferedWriter out = new BufferedWriter(new FileWriter(file));
+                final BufferedWriter out = new BufferedWriter(new FileWriter(file));
                 out.write("# Enter nickserv ident in format account:pass");
                 out.flush();
                 out.close();
-            } catch (IOException exception) {
+            } catch (final IOException exception) {
                 System.err.println("Failed first write of config!");
                 exception.printStackTrace(System.err);
             }
         } else {
             try {
-                BufferedReader in = new BufferedReader(new FileReader(file));
+                final BufferedReader in = new BufferedReader(new FileReader(file));
                 String nextLine;
                 while ((nextLine = in.readLine()) != null) {
-                    if (!nextLine.startsWith("#"))
-                        ident = nextLine;
+                    if (!nextLine.startsWith("#")) {
+                        this.ident = nextLine;
+                    }
                 }
                 in.close();
-            } catch (IOException exception) {
+            } catch (final IOException exception) {
                 System.err.println("Failed read of config!");
                 exception.printStackTrace(System.err);
             }
         }
         file = null;
-
         this.setAutoNickChange(true);
-        this.setFinger("SoaringCats bot v" + version + " | Report issues in #SoaringCats");
+        this.setFinger("SoaringCats bot v" + this.version + " | Report issues in #SoaringCats");
         this.setLogin("meow");
         this.setName("SoaringCats");
         this.setVerbose(true);
         this.setVersion(Colors.BOLD + Colors.RED + "Report issues in #SoaringCats");
         System.out.println("Started! Connecting...");
         try {
-            this.connect("irc.esper.net", 5555, ident);
-        } catch (Exception exception) {
+            this.connect("irc.esper.net", 5555, this.ident);
+        } catch (final Exception exception) {
             System.err.println("Failed to connect!");
             exception.printStackTrace(System.err);
             System.exit(1);
@@ -110,7 +111,7 @@ public class SoaringCats extends PircBot {
     @Override
     public void onConnect() {
         System.out.println("Connected!");
-        this.setVersion("SoaringCats bot v" + version + " | Report issues in #SoaringCats");
+        this.setVersion("SoaringCats bot v" + this.version + " | Report issues in #SoaringCats");
         if (!this.getNick().equals("SoaringCats")) {
             this.sendMessage("NickServ", "ghost SoaringCats");
             this.sendMessage("NickServ", "release");
@@ -125,47 +126,43 @@ public class SoaringCats extends PircBot {
     public void onDisconnect() {
         try {
             this.reconnect();
-        } catch (Exception exception) {
+        } catch (final Exception exception) {
             System.err.println("Failed to reconnect!");
             exception.printStackTrace(System.err);
             System.exit(1);
         }
     }
-    
+
     @Override
-    public void onJoin(String channel, String sender, String login, String hostname) {
-        if (!channel.equalsIgnoreCase("#SoaringCats"))
+    public void onJoin(final String channel, final String sender, final String login, final String hostname) {
+        if (!channel.equalsIgnoreCase("#SoaringCats")) {
             return;
-        for (String prefix : prefixes) {
+        }
+        for (final String prefix : this.prefixes) {
             if (sender.startsWith(prefix)) {
-                this.sendMessage(channel, "Welcome to " + channel + ", " + sender + "! "
-                        + "If you are here to request help, please state your question and "
-                        + Colors.BOLD + "do not ask to ask" + Colors.NORMAL + ". After "
-                        + "asking your question, please wait patiently for a reply. Not all "
-                        + "users are currently active. You're also able to change your name "
-                        + "with " + Colors.BOLD + "/nick <new name>" + Colors.NORMAL);
+                this.sendMessage(channel, "Welcome to " + channel + ", " + sender + "! " + "If you are here to request help, please state your question and " + Colors.BOLD + "do not ask to ask" + Colors.NORMAL + ". After " + "asking your question, please wait patiently for a reply. Not all " + "users are currently active. You're also able to change your name " + "with " + Colors.BOLD + "/nick <new name>" + Colors.NORMAL);
             }
         }
     }
 
     @Override
-    public void onMessage(String channel, String sender, String login, String hostname, String message) {
+    public void onMessage(final String channel, final String sender, final String login, final String hostname, final String message) {
         File file = new File("notes/" + sender);
         if (file.exists()) {
             try {
-                BufferedReader in = new BufferedReader(new FileReader(file));
+                final BufferedReader in = new BufferedReader(new FileReader(file));
                 String nextLine;
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 while ((nextLine = in.readLine()) != null) {
                     sb.append(nextLine + " ");
                 }
                 in.close();
                 sb.setLength(sb.length() - 1);
                 file.delete();
-                String mess = sender + ", " + Colors.BOLD + "you have notes!" + sb.toString();
+                final String mess = sender + ", " + Colors.BOLD + "you have notes!" + sb.toString();
                 String send = "";
-                int max = 512 - ("PRIVMSG " + channel + " :").length();
-                for (char c : mess.toCharArray()) {
+                final int max = 512 - ("PRIVMSG " + channel + " :").length();
+                for (final char c : mess.toCharArray()) {
                     send += c;
                     if (send.length() == max) {
                         this.sendMessage(channel, send);
@@ -173,14 +170,14 @@ public class SoaringCats extends PircBot {
                     }
                 }
                 this.sendMessage(channel, send);
-            } catch (FileNotFoundException exception) {
+            } catch (final FileNotFoundException exception) {
                 exception.printStackTrace();
-            } catch (IOException exception) {
+            } catch (final IOException exception) {
                 exception.printStackTrace();
             }
         }
         if (message.startsWith("!note ")) {
-            String[] args = message.split(" ");
+            final String[] args = message.split(" ");
             if (args.length == 2) {
                 this.sendMessage(channel, "Cowardly discarding empty note.");
             } else if (args.length < 3) {
@@ -191,15 +188,15 @@ public class SoaringCats extends PircBot {
                 } else {
                     try {
                         file = new File("notes/" + args[1]);
-                        BufferedWriter out = new BufferedWriter(new FileWriter(file, true));
+                        final BufferedWriter out = new BufferedWriter(new FileWriter(file, true));
                         if (file.exists()) {
                             out.newLine();
                         }
-                        out.write(Colors.NORMAL + "[" + sdf.format(new Date(System.currentTimeMillis())) + "] <" + Colors.UNDERLINE + sender + Colors.NORMAL + "> " + message.replace("!note " + args[1] + " ", ""));
+                        out.write(Colors.NORMAL + "[" + this.sdf.format(new Date(System.currentTimeMillis())) + "] <" + Colors.UNDERLINE + sender + Colors.NORMAL + "> " + message.replace("!note " + args[1] + " ", ""));
                         out.flush();
                         out.close();
                         this.sendMessage(channel, "done!");
-                    } catch (IOException exception) {
+                    } catch (final IOException exception) {
                         exception.printStackTrace();
                         this.sendMessage(channel, "Failed to save note.");
                     }
@@ -207,26 +204,26 @@ public class SoaringCats extends PircBot {
             }
         }
         if (message.startsWith("!prefix")) {
-            for (User user : this.getUsers(channel)) {
+            for (final User user : this.getUsers(channel)) {
                 if (user.getNick().equals(sender)) {
                     if (!user.isOp()) {
                         return;
                     }
                 }
             }
-            String[] args = message.split(" ");
+            final String[] args = message.split(" ");
             String reply = "!prefix <list/add/rem>";
             if (args.length == 1) {
                 this.sendMessage(channel, reply);
             } else if (args.length == 2) {
                 if (args[1].equals("list")) {
                     reply = Colors.BOLD + "Prefixes: " + Colors.NORMAL;
-                    for (String prefix : prefixes) {
+                    for (final String prefix : this.prefixes) {
                         reply += prefix;
                     }
                     String mess = "";
-                    int max = 512 - ("PRIVMSG " + channel + " :").length();
-                    for (char c : reply.toCharArray()) {
+                    final int max = 512 - ("PRIVMSG " + channel + " :").length();
+                    for (final char c : reply.toCharArray()) {
                         mess += c;
                         if (mess.length() == max) {
                             this.sendMessage(channel, mess);
@@ -241,21 +238,21 @@ public class SoaringCats extends PircBot {
                 if (args[1].equals("add")) {
                     this.sendMessage(channel, this.prefixes.add(args[2]) ? "Added " + args[2] : "Couldn't add " + args[2]);
                     try {
-                        BufferedWriter out = new BufferedWriter(new FileWriter(new File("prefixes.cfg"), true));
+                        final BufferedWriter out = new BufferedWriter(new FileWriter(new File("prefixes.cfg"), true));
                         out.newLine();
                         out.write(args[2]);
-                    } catch (IOException exception) {
+                    } catch (final IOException exception) {
                         exception.printStackTrace();
                     }
                 } else if (args[1].equals("rem")) {
                     this.sendMessage(channel, this.prefixes.remove(args[2]) ? "Removed " + args[2] : "Couldn't remove " + args[2]);
                     try {
-                        BufferedWriter out = new BufferedWriter(new FileWriter(new File("prefixes.cfg"), true));
-                        for (String prefix : prefixes) {
+                        final BufferedWriter out = new BufferedWriter(new FileWriter(new File("prefixes.cfg"), true));
+                        for (final String prefix : this.prefixes) {
                             out.newLine();
                             out.write(prefix);
                         }
-                    } catch (IOException exception) {
+                    } catch (final IOException exception) {
                         exception.printStackTrace();
                     }
                 } else {
@@ -266,15 +263,15 @@ public class SoaringCats extends PircBot {
             }
         }
         if (message.startsWith("!clear")) {
-            for (User user : this.getUsers(channel)) {
+            for (final User user : this.getUsers(channel)) {
                 if (user.getNick().equals(sender)) {
                     if (!user.isOp()) {
                         return;
                     }
                 }
             }
-            String[] args = message.split(" ");
-            String reply = "!clear <user>";
+            final String[] args = message.split(" ");
+            final String reply = "!clear <user>";
             if (args.length != 2) {
                 this.sendMessage(channel, reply);
             } else {
@@ -287,5 +284,4 @@ public class SoaringCats extends PircBot {
             }
         }
     }
-
 }

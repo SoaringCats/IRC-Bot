@@ -9,21 +9,22 @@ import tk.nekotech.dev.soaringcats.web.GH_Payload.Commit;
 import com.google.gson.Gson;
 
 public class GitHubRunner extends Thread {
-    private String json;
-    private WebListener wl;
+    private final String json;
+    private final WebListener wl;
 
-    public GitHubRunner(String json, WebListener wl) {
+    public GitHubRunner(final String json, final WebListener wl) {
         this.json = json;
         this.wl = wl;
     }
 
+    @Override
     public void run() {
-        GH_Payload ret = (new Gson()).fromJson(json, GH_Payload.class);
+        final GH_Payload ret = new Gson().fromJson(this.json, GH_Payload.class);
         try {
-            for (Commit commit : ret.commits) {
-                StringBuilder sb = new StringBuilder();
-                String user = ret.repository.url.replace("https://github.com/", "").replace("/" + ret.repository.name, "");
-                final URL url = new URL("https://api.github.com/repos/" + user  + "/" + ret.repository.name + "/commits/" + commit.id);
+            for (final Commit commit : ret.commits) {
+                final StringBuilder sb = new StringBuilder();
+                final String user = ret.repository.url.replace("https://github.com/", "").replace("/" + ret.repository.name, "");
+                final URL url = new URL("https://api.github.com/repos/" + user + "/" + ret.repository.name + "/commits/" + commit.id);
                 final BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
@@ -51,5 +52,4 @@ public class GitHubRunner extends Thread {
             e.printStackTrace();
         }
     }
-
 }

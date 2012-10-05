@@ -7,17 +7,21 @@ import tk.nekotech.dev.soaringcats.web.GitHubRunner;
 import fi.iki.elonen.NanoHTTPD;
 
 public class WebListener extends NanoHTTPD {
-    private SoaringCats sc;
+    private final SoaringCats sc;
 
-    public WebListener(SoaringCats sc) throws IOException {
+    public WebListener(final SoaringCats sc) throws IOException {
         super(8080, new File("."));
         this.sc = sc;
     }
-    
+
     private NanoHTTPD.Response getResponse() {
         return new NanoHTTPD.Response(NanoHTTPD.HTTP_FORBIDDEN, NanoHTTPD.MIME_HTML, "<html><body><h1>Forbidden.</h1><p>Access forbidden.</p></html>");
     }
-    
+
+    public void send(final String message) {
+        this.sc.sendMessage("#SoaringCats", message);
+    }
+
     @Override
     public Response serve(final String uri, final String method, final Properties header, final Properties parms, final Properties files) {
         if (!uri.equals("/github")) {
@@ -27,11 +31,7 @@ public class WebListener extends NanoHTTPD {
             return this.getResponse();
         }
         final String payload = parms.getProperty("payload");
-        (new GitHubRunner(payload, this)).start();
+        new GitHubRunner(payload, this).start();
         return new NanoHTTPD.Response(NanoHTTPD.HTTP_OK, NanoHTTPD.MIME_HTML, "");
-    }
-    
-    public void send(String message) {
-        this.sc.sendMessage("#SoaringCats", message);
     }
 }
