@@ -241,6 +241,7 @@ public class SoaringCats extends PircBot {
                         final BufferedWriter out = new BufferedWriter(new FileWriter(new File("prefixes.cfg"), true));
                         out.newLine();
                         out.write(args[2]);
+                        out.close();
                     } catch (final IOException exception) {
                         exception.printStackTrace();
                     }
@@ -252,6 +253,7 @@ public class SoaringCats extends PircBot {
                             out.newLine();
                             out.write(prefix);
                         }
+                        out.close();
                     } catch (final IOException exception) {
                         exception.printStackTrace();
                     }
