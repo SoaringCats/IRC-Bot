@@ -21,6 +21,7 @@ public class SoaringCats extends PircBot {
     public String oauth = "default";
     private ArrayList<String> prefixes;
     private final SimpleDateFormat sdf;
+    private Factoid factoid;
 
     public SoaringCats() {
         System.out.println("Starting...");
@@ -105,6 +106,7 @@ public class SoaringCats extends PircBot {
             }
         }
         file = null;
+        this.factoid = new Factoid(this);
         this.setAutoNickChange(true);
         this.setFinger("SoaringCats bot v" + this.version + " | Report issues in #SoaringCats");
         this.setLogin("meow");
@@ -301,6 +303,9 @@ public class SoaringCats extends PircBot {
                     this.sendMessage(channel, "There are no recorded notes for " + args[1]);
                 }
             }
+        }
+        if (message.startsWith("?? ")) {
+            factoid.handle(sender, message);
         }
         // GitHub commands
         if (message.startsWith("I/")) {
