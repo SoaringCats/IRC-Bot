@@ -1,6 +1,26 @@
 package tk.nekotech.dev.soaringcats.github;
 
 public class GH_Issue {
+    public class Label {
+        public String url;
+        public String color;
+        public String name;
+    }
+
+    public class PR {
+        public String html_url;
+        public String patch_url;
+        public String diff_url;
+    }
+
+    public class User {
+        public String url;
+        public String login;
+        public String avatar_url;
+        public String gravatar_id;
+        public int id;
+    }
+
     public String message; // AKA error
     public String url;
     public String state;
@@ -19,24 +39,4 @@ public class GH_Issue {
     public PR pull_request;
     public String updated_at;
     public String milestone;
-
-    public class Label {
-        public String url;
-        public String color;
-        public String name;
-    }
-
-    public class User {
-        public String url;
-        public String login;
-        public String avatar_url;
-        public String gravatar_id;
-        public int id;
-    }
-
-    public class PR {
-        public String html_url;
-        public String patch_url;
-        public String diff_url;
-    }
 }

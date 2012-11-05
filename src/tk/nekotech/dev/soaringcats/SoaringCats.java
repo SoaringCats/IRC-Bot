@@ -21,7 +21,7 @@ public class SoaringCats extends PircBot {
     public String oauth = "default";
     private ArrayList<String> prefixes;
     private final SimpleDateFormat sdf;
-    private Factoid factoid;
+    private final Factoid factoid;
 
     public SoaringCats() {
         System.out.println("Starting...");
@@ -123,6 +123,15 @@ public class SoaringCats extends PircBot {
         }
     }
 
+    public boolean isOp(final String user, final String channel) {
+        for (final User us : this.getUsers(channel)) {
+            if (us.getNick().equalsIgnoreCase(user)) {
+                return us.isOp();
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onConnect() {
         System.out.println("Connected!");
@@ -135,15 +144,6 @@ public class SoaringCats extends PircBot {
         }
         this.joinChannel("#SoaringCats");
         this.sendMessage("#SoaringCats", "Meow!");
-    }
-
-    public boolean isOp(String user, String channel) {
-        for (User us : this.getUsers(channel)) {
-            if (us.getNick().equalsIgnoreCase(user)) {
-                return us.isOp();
-            }
-        }
-        return false;
     }
 
     @Override
@@ -231,7 +231,7 @@ public class SoaringCats extends PircBot {
             return;
         }
         if (message.startsWith("!prefix")) {
-            if (!isOp(sender, channel)) {
+            if (!this.isOp(sender, channel)) {
                 return;
             }
             final String[] args = message.split(" ");
@@ -288,7 +288,7 @@ public class SoaringCats extends PircBot {
             }
         }
         if (message.startsWith("!clear")) {
-            if (!isOp(sender, channel)) {
+            if (!this.isOp(sender, channel)) {
                 return;
             }
             final String[] args = message.split(" ");
@@ -305,11 +305,11 @@ public class SoaringCats extends PircBot {
             }
         }
         if (message.startsWith("?? ")) {
-            factoid.handle(sender, message);
+            this.factoid.handle(sender, message);
         }
         // GitHub commands
         if (message.startsWith("I/")) {
-            String[] bits = message.split("/");
+            final String[] bits = message.split("/");
             if (bits.length != 3) {
                 return;
             }
