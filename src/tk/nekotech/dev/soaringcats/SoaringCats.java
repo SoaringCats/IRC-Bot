@@ -13,10 +13,12 @@ import java.util.Date;
 import org.jibble.pircbot.Colors;
 import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
+import tk.nekotech.dev.soaringcats.github.IssueRunner;
 
 public class SoaringCats extends PircBot {
     private final String version = "0.1";
     private String ident = "default:default";
+    public String oauth = "default";
     private ArrayList<String> prefixes;
     private final SimpleDateFormat sdf;
 
@@ -70,6 +72,13 @@ public class SoaringCats extends PircBot {
                 file.createNewFile();
                 final BufferedWriter out = new BufferedWriter(new FileWriter(file));
                 out.write("# Enter nickserv ident in format account:pass");
+                out.newLine();
+                out.write("nickserv account:pass");
+                out.newLine();
+                out.write("# Enter GitHub OAuth token");
+                out.newLine();
+                out.write("oauth example");
+                out.newLine();
                 out.flush();
                 out.close();
             } catch (final IOException exception) {
@@ -82,7 +91,11 @@ public class SoaringCats extends PircBot {
                 String nextLine;
                 while ((nextLine = in.readLine()) != null) {
                     if (!nextLine.startsWith("#")) {
-                        this.ident = nextLine;
+                        if (nextLine.startsWith("nickserv ")) {
+                            this.ident = nextLine.replaceFirst("nickserv ", "");
+                        } else if (nextLine.startsWith("oauth ")) {
+                            this.oauth = nextLine.replace("oauth ", "");
+                        }
                     }
                 }
                 in.close();
@@ -120,6 +133,15 @@ public class SoaringCats extends PircBot {
         }
         this.joinChannel("#SoaringCats");
         this.sendMessage("#SoaringCats", "Meow!");
+    }
+
+    public boolean isOp(String user, String channel) {
+        for (User us : this.getUsers(channel)) {
+            if (us.getNick().equalsIgnoreCase(user)) {
+                return us.isOp();
+            }
+        }
+        return false;
     }
 
     @Override
@@ -203,13 +225,12 @@ public class SoaringCats extends PircBot {
                 }
             }
         }
+        if (!channel.equals("#soaringcats")) {
+            return;
+        }
         if (message.startsWith("!prefix")) {
-            for (final User user : this.getUsers(channel)) {
-                if (user.getNick().equals(sender)) {
-                    if (!user.isOp()) {
-                        return;
-                    }
-                }
+            if (!isOp(sender, channel)) {
+                return;
             }
             final String[] args = message.split(" ");
             String reply = "!prefix <list/add/rem>";
@@ -265,12 +286,8 @@ public class SoaringCats extends PircBot {
             }
         }
         if (message.startsWith("!clear")) {
-            for (final User user : this.getUsers(channel)) {
-                if (user.getNick().equals(sender)) {
-                    if (!user.isOp()) {
-                        return;
-                    }
-                }
+            if (!isOp(sender, channel)) {
+                return;
             }
             final String[] args = message.split(" ");
             final String reply = "!clear <user>";
@@ -284,6 +301,14 @@ public class SoaringCats extends PircBot {
                     this.sendMessage(channel, "There are no recorded notes for " + args[1]);
                 }
             }
+        }
+        // GitHub commands
+        if (message.startsWith("I/")) {
+            String[] bits = message.split("/");
+            if (bits.length != 3) {
+                return;
+            }
+            new IssueRunner(this, bits[1], bits[2]).start();
         }
     }
 }
