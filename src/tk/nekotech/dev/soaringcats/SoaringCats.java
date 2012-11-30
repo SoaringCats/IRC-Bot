@@ -242,8 +242,10 @@ public class SoaringCats extends PircBot {
                 if (args[1].equals("list")) {
                     reply = Colors.BOLD + "Prefixes: " + Colors.NORMAL;
                     for (final String prefix : this.prefixes) {
-                        reply += prefix;
+                        reply += prefix + ", ";
                     }
+                    if (reply.length() != 0)
+                        reply = reply.substring(0, reply.length() - 2);
                     String mess = "";
                     final int max = 512 - ("PRIVMSG " + channel + " :").length();
                     for (final char c : reply.toCharArray()) {
